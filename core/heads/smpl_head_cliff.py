@@ -8,13 +8,13 @@ from ..utils.geometry import rot6d_to_rotmat, aa_to_rotmat
 from ..components.pose_transformer import TransformerDecoder
 from ..constants import TRANSFORMER_DECODER, SMPL_MEAN_PARAMS_FILE, NUM_BETAS, NUM_POSE_PARAMS
 
-def build_smpl_head():
-    return SMPLTransformerDecoderHead()
+def build_smpl_head(smpl_mean_params_file: str = SMPL_MEAN_PARAMS_FILE):
+    return SMPLTransformerDecoderHead(smpl_mean_params_file)
 
 
 class SMPLTransformerDecoderHead(nn.Module):
 
-    def __init__(self):
+    def __init__(self, smpl_mean_params_file: str = SMPL_MEAN_PARAMS_FILE):
         super().__init__()
         self.joint_rep_dim = 6
         npose = self.joint_rep_dim * (NUM_POSE_PARAMS + 1)
@@ -34,7 +34,7 @@ class SMPLTransformerDecoderHead(nn.Module):
         self.deccam = nn.Linear(dim, 3)
         self.deckp = nn.Linear(dim, 88)
 
-        mean_params = np.load(SMPL_MEAN_PARAMS_FILE)
+        mean_params = np.load(smpl_mean_params_file)
         init_body_pose = torch.from_numpy(mean_params['pose'].astype(np.float32)).unsqueeze(0)
         init_betas = torch.from_numpy(mean_params['shape'].astype('float32')).unsqueeze(0)
         init_cam = torch.from_numpy(mean_params['cam'].astype(np.float32)).unsqueeze(0)

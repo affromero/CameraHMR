@@ -2,15 +2,15 @@ import torch
 import pytorch_lightning as pl
 from .backbones import create_backbone
 from .heads.smpl_head_cliff import build_smpl_head
-from .constants import NUM_POSE_PARAMS
+from .constants import NUM_POSE_PARAMS, SMPL_MEAN_PARAMS_FILE
 
 class CameraHMR(pl.LightningModule):
 
-    def __init__(self):
+    def __init__(self, smpl_mean_params_file: str = SMPL_MEAN_PARAMS_FILE):
 
         super().__init__()
         self.backbone = create_backbone()
-        self.smpl_head = build_smpl_head()
+        self.smpl_head = build_smpl_head(smpl_mean_params_file=smpl_mean_params_file)
 
     def forward(self, batch):
         x = batch['img']
